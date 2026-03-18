@@ -226,10 +226,10 @@ static bool init_drtm_interface(u64 base_addr, psp_version_t psp_version)
     switch(psp_version) {
     case PSP_V3:
     case PSP_V2:
-        g_psp_drtm.c2pmsg_72 = (volatile u32 *)(u32)(base + 0x10a20);
-        g_psp_drtm.c2pmsg_93 = (volatile u32 *)(u32)(base + 0x10a74);
-        g_psp_drtm.c2pmsg_94 = (volatile u32 *)(u32)(base + 0x10a78);
-        g_psp_drtm.c2pmsg_95 = (volatile u32 *)(u32)(base + 0x10a7c);
+        g_psp_drtm.c2pmsg_72 = (volatile u32 *)(uintptr_t)(base + 0x10a20);
+        g_psp_drtm.c2pmsg_93 = (volatile u32 *)(uintptr_t)(base + 0x10a74);
+        g_psp_drtm.c2pmsg_94 = (volatile u32 *)(uintptr_t)(base + 0x10a78);
+        g_psp_drtm.c2pmsg_95 = (volatile u32 *)(uintptr_t)(base + 0x10a7c);
         break;
     default:
         print("DRTM: init_drtm_interface: Unrecognized PSP version\n");
@@ -297,7 +297,7 @@ bool drtm_extend_ossl_digest(u64 addr, u64 size)
         return false;
     }
 
-    memcpy((void *)(u32)reloc_addr, (void *)(u32)addr, (size_t)size);
+    memcpy((void *)(uintptr_t)reloc_addr, (void *)(uintptr_t)addr, (size_t)size);
 
     print("DRTM: drtm_extend_ossl_digest: reloc_addr = ");
     print_u64(reloc_addr);
