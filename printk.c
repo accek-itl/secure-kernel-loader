@@ -19,6 +19,29 @@
 
 #ifdef DEBUG
 
+#ifdef DEBUGMEM_BASE
+
+#include <string.h>
+
+static bool debugmem_initialized;
+static char* debugmem_ptr;
+
+static void print_char(char c)
+{
+    if (!debugmem_initialized) {
+        debugmem_ptr = (char*)DEBUGMEM_BASE;
+        memset(debugmem_ptr, 0xaa, 0x1000);
+        debugmem_initialized = true;
+    }
+
+    *debugmem_ptr = c;
+    __asm__ __volatile__("clflush (%0)" :: "r"(debugmem_ptr) : "memory");
+    debugmem_ptr++;
+    *debugmem_ptr = '\0';
+}
+
+#else
+
 static void print_char(char c)
 {
     while ( !(inb(0x3f8 + 5) & 0x20) )
@@ -26,6 +49,8 @@ static void print_char(char c)
 
     outb(c, 0x3f8);
 }
+
+#endif
 
 void print(const char * txt)
 {
