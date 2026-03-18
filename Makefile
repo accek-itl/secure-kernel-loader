@@ -8,6 +8,10 @@ ifeq ($(DEBUG),y)
 CFLAGS  += -DDEBUG
 endif
 
+ifdef DEBUGMEM_BASE
+CFLAGS  += -DDEBUGMEM_BASE=$(DEBUGMEM_BASE)
+endif
+
 ifeq ($(LTO),y)
 CFLAGS  += -flto
 LDFLAGS += -flto
