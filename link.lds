@@ -66,8 +66,8 @@ SECTIONS
 		*(.skl_pubkey_modulus)
 	}
 
+	. = ALIGN(4096);
 	.bss : {
-		. = ALIGN(4096);
 		_bss = .;
 		/*
 		 * Due to the 64k total size constraint, we link all page size/aligned
