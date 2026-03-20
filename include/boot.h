@@ -168,6 +168,12 @@ static inline void io_delay(void)
     asm volatile("outb %%al,%0" : : "dN" (DELAY_PORT));
 }
 
+static inline void udelay(unsigned int us)
+{
+    while (us--)
+        io_delay();
+}
+
 static inline void stgi(void)
 {
     asm volatile(".byte 0x0f, 0x01, 0xdc" ::: "memory");

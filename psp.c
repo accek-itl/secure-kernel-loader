@@ -77,11 +77,6 @@ const struct pci_psp_device psp_devs_list[] = {
 static bool init_drtm_interface(u64 base_addr, psp_version_t psp_version);
 static bool drtm_wait_for_psp_ready(u32 *status);
 
-static void drtm_udelay(int us)
-{
-    while (us--)
-        io_delay();
-}
 
 static void drtm_print_status(u32 status)
 {
@@ -256,7 +251,7 @@ static bool drtm_wait_for_psp_ready(u32 *status)
         }
 
         /* TODO: select wait time appropriately */
-        drtm_udelay(100000);
+        udelay(100000);
     };
 
     if (!retry) {

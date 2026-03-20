@@ -31,6 +31,7 @@
 #include <printk.h>
 #include <dev.h>
 #include <psp.h>
+#include <debugfb.h>
 
 const skl_info_t __used skl_info = {
     .uuid = {
@@ -259,6 +260,8 @@ static asm_return_t amdsl_launch()
     struct tpm *tpm;
     asm_return_t ret;
 
+    debugfb_init();
+
     print("Enter amdsl_launch()\n");
 
     tpm = enable_tpm();
@@ -318,6 +321,8 @@ static asm_return_t amdsl_launch()
 
     print("amdsl_launch() is about to exit\n");
 
+    debugfb_teardown();
+
     return ret;
 }
 
@@ -332,6 +337,8 @@ asm_return_t skl_main(void)
     struct slr_entry_amd_info *amd_info;
     asm_return_t ret;
     u32 entry_offset;
+
+    debugfb_init();
 
     /*
      * Now in 64b mode, paging is setup. This is the launching point. We can
@@ -399,6 +406,8 @@ asm_return_t skl_main(void)
     hexdump(&bootloader_data, bootloader_data.size);
 
     print("skl_main() is about to exit\n");
+
+    debugfb_teardown();
 
     return ret;
 

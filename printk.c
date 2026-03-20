@@ -15,6 +15,7 @@
  */
 
 #include <boot.h>
+#include <debugfb.h>
 #include <string.h>
 #include <types.h>
 
@@ -38,6 +39,13 @@ static void print_char(char c)
     debugmem_ptr++;
     *debugmem_ptr = '\0';
     __asm__ __volatile__("clflush (%0)" :: "r"(debugmem_ptr) : "memory");
+}
+
+#elif defined(DEBUGFB_BASE)
+
+static void print_char(char c)
+{
+    debugfb_putchar(c);
 }
 
 #else
