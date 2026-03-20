@@ -259,7 +259,8 @@ static asm_return_t amdsl_launch()
 {
     struct slr_entry_dl_info *dl_info;
     struct slr_entry_amd_info *amd_info;
-    struct tpm *tpm;
+    struct slr_entry_log_info *log_info;
+    drtm_tcg_log_descriptor_t log_desc;
     asm_return_t ret;
 
     debugfb_init();
@@ -267,25 +268,26 @@ static asm_return_t amdsl_launch()
 
     print("Enter amdsl_launch()\n");
 
-    tpm = enable_tpm();
-    tpm_request_locality(tpm, 2);
-    event_log_init(tpm);
-
-    print("TPM enabled and logging initialized\n");
-
     dl_info = next_entry_with_tag(NULL, SLR_ENTRY_DL_INFO);
     amd_info = next_entry_with_tag(NULL, SLR_ENTRY_AMD_INFO);
+    log_info = next_entry_with_tag(NULL, SLR_ENTRY_LOG_INFO);
 
-    if ( dl_info                                     == NULL
-         || amd_info                                 == NULL
-         || dl_info->hdr.size                        != sizeof(*dl_info)
-         || end_of_slrt()                             < _p(&dl_info[1])
-         || amd_info->hdr.size                       != sizeof(*amd_info)
-         || end_of_slrt()                             < _p(&amd_info[1])
-         || dl_info->dlme_base                       >= 0x100000000ULL
-         || dl_info->dlme_base + dl_info->dlme_size  >= 0x100000000ULL
-         || dl_info->dlme_entry                      >= dl_info->dlme_size
-         || dl_info->bl_context.bootloader           != SLR_BOOTLOADER_GRUB )
+    if ( dl_info                                      == NULL
+         || amd_info                                  == NULL
+         || log_info                                  == NULL
+         || dl_info->hdr.size                         != sizeof(*dl_info)
+         || end_of_slrt()                              < _p(&dl_info[1])
+         || amd_info->hdr.size                        != sizeof(*amd_info)
+         || end_of_slrt()                              < _p(&amd_info[1])
+         || log_info->hdr.size                        != sizeof(*log_info)
+         || end_of_slrt()                              < _p(&log_info[1])
+         || dl_info->dlme_base                        >= 0x100000000ULL
+         || dl_info->dlme_base + dl_info->dlme_size   >= 0x100000000ULL
+         || dl_info->dlme_entry                       >= dl_info->dlme_size
+         || dl_info->bl_context.bootloader            != SLR_BOOTLOADER_GRUB
+         || log_info->format                          != SLR_DRTM_TPM20_LOG
+         || log_info->size                            < 0x1000
+         || (u64)log_info->addr + (u64)log_info->size >= 0x100000000ULL )
     {
         print("Bad bootloader data format\n");
         reboot();
@@ -307,6 +309,17 @@ static asm_return_t amdsl_launch()
 
     if (!drtm_extend_ossl_digest((u64)dl_info->dlme_base, dl_info->dlme_size)) {
         print("DRTM: skl_linux: failed to extend OSSL digest\n");
+    }
+
+    if (!drtm_get_tcg_logs(&log_desc)) {
+        print("DRTM: skl_linux: failed to get TCG logs\n");
+    }
+    if (log_desc.size > log_info->size) {
+        print("DRTM: skl_linux: log buffer too small\n");
+    } else if (log_desc.size == 0 || (u64)log_desc.addr + (u64)log_desc.size >= 0x100000000ULL) {
+        print("DRTM: skl_linux: invalid log buffer address/size\n");
+    } else {
+        memcpy(_p(log_info->addr), _p(log_desc.addr), log_desc.size);
     }
 
     ret.dlme_entry = _p(dl_info->dlme_base + dl_info->dlme_entry);
