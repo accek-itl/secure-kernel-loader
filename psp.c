@@ -147,7 +147,11 @@ static const struct pci_psp_device *is_drtm_device(u16 vendor_id,
     }
 
     if(psp && psp->version == PSP_NONE) {
-        print("DRTM: is_drtm_device: AMD SP device does not have PSP\n");
+        print("DRTM: is_drtm_device: AMD SP device does not have PSP (");
+        print_u32(vendor_id);
+        print(":");
+        print_u32(dev_id);
+        print(")\n");
         psp = NULL;
     }
 
