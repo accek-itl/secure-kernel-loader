@@ -68,6 +68,8 @@
 #define __used          __attribute__ ((used))
 #define __section(x)    __attribute__ ((section(x)))
 #define noinline        __attribute__ ((noinline))
+/* Prevent LTO from privatizing or changing calling convention */
+#define __asmcall       __attribute__ ((used, externally_visible))
 
 /* Due to the 64k total size limit, group all page aligned data together. */
 #define __page_data \
