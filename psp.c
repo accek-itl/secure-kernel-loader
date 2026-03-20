@@ -166,14 +166,16 @@ static void smn_register_read (u32 address, u32 *value)
 
 #define IOHC0NBCFG_SMNBASE 0x13B00000
 #define PSP_BASE_ADDR_LO_SMN_ADDRESS (IOHC0NBCFG_SMNBASE + 0x102E0)
+#define PSP_BASE_ADDR_HI_SMN_ADDRESS (IOHC0NBCFG_SMNBASE + 0x102E4)
 static u64 get_psp_bar_addr (void)
 {
-  u32 pspbaselo;
-  pspbaselo = 0;
-  smn_register_read (PSP_BASE_ADDR_LO_SMN_ADDRESS, &pspbaselo);
+  u32 lo, hi;
+  smn_register_read (PSP_BASE_ADDR_LO_SMN_ADDRESS, &lo);
+  smn_register_read (PSP_BASE_ADDR_HI_SMN_ADDRESS, &hi);
   //Mask out the lower bits
-  pspbaselo &= 0xFFF00000;
-  return (u64) pspbaselo;
+  lo &= 0xFFF00000;
+  hi &= 0x0000FFFF;
+  return ((u64)hi << 32) | (u64)lo;
 }
 
 bool discover_psp(void)
