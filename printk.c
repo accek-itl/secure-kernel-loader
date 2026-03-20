@@ -62,72 +62,46 @@ void print(const char * txt)
     }
 }
 
-void print_p(const void * _p)
+static void print_hex_nibble(u8 nibble)
 {
-    char tmp[sizeof(void*)*2 + 5] = "0x";
-    int i;
-    size_t p = (size_t)_p;
-
-    for ( i=0; i<sizeof(void*); i++ )
-    {
-        if ( (p & 0xf) >= 10 )
-            tmp[sizeof(void*)*2 + 1 - 2*i] = (p & 0xf) + 'a' - 10;
-        else
-            tmp[sizeof(void*)*2 + 1 - 2*i] = (p & 0xf) + '0';
-        p >>= 4;
-        if ( (p & 0xf) >= 10 )
-            tmp[sizeof(void*)*2 - 2*i] = (p & 0xf) + 'a' - 10;
-        else
-            tmp[sizeof(void*)*2 - 2*i] = (p & 0xf) + '0';
-        p >>= 4;
-    }
-    tmp[sizeof(void*)*2 + 2] = ':';
-    tmp[sizeof(void*)*2 + 3] = ' ';
-    tmp[sizeof(void*)*2 + 4] = '\0';
-    print(tmp);
+    nibble &= 0xf;
+    print_char(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
 }
 
-void print_u64(u64 p)
+static void print_hex(u64 val, int size)
 {
-    char tmp[sizeof(void*)*2 + 5] = "0x";
     int i;
 
-    for ( i=0; i<sizeof(void*); i++ )
-     {
-        if ( (p & 0xf) >= 10 )
-            tmp[sizeof(void*)*2 + 1 - 2*i] = (p & 0xf) + 'a' - 10;
-        else
-            tmp[sizeof(void*)*2 + 1 - 2*i] = (p & 0xf) + '0';
-        p >>= 4;
-        if ((p & 0xf) >= 10)
-            tmp[sizeof(void*)*2 - 2*i] = (p & 0xf) + 'a' - 10;
-        else
-            tmp[sizeof(void*)*2 - 2*i] = (p & 0xf) + '0';
-        p >>= 4;
+    print_char('0');
+    print_char('x');
+    for (i = (size - 1) * 8; i >= 0; i -= 4) {
+        u8 nibble = (val >> i) & 0xf;
+        print_char(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
     }
-    tmp[sizeof(void*)*2 + 2] = ':';
-    tmp[sizeof(void*)*2 + 3] = ' ';
-    tmp[sizeof(void*)*2 + 4] = '\0';
-    print(tmp);
+}
+
+void print_p(const void * _p)
+{
+    print_hex((u64)(uintptr_t)_p, sizeof(_p));
+    print_char(':');
+    print_char(' ');
+}
+
+void print_u32(u32 v)
+{
+    print_hex(v, 4);
+}
+
+void print_u64(u64 v)
+{
+    print_hex(v, 8);
 }
 
 static void print_b(char p)
 {
-    char tmp[4];
-
-    if ( (p & 0xf) >= 10 )
-        tmp[1] = (p & 0xf) + 'a' - 10;
-    else
-        tmp[1] = (p & 0xf) + '0';
-    p >>= 4;
-    if ( (p & 0xf) >= 10 )
-        tmp[0] = (p & 0xf) + 'a' - 10;
-    else
-        tmp[0] = (p & 0xf) + '0';
-
-    tmp[2] = ' ';
-    tmp[3] = '\0';
-    print(tmp);
+    print_hex_nibble(p >> 4);
+    print_hex_nibble(p);
+    print_char(' ');
 }
 
 static inline int isprint(int c)
