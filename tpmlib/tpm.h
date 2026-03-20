@@ -25,6 +25,7 @@
 #define TPM_NO_LOCALITY		0xFF
 
 enum tpm_hw_intf {
+	TPM_NONE,
 	TPM_TIS,
 	TPM_CRB
 };

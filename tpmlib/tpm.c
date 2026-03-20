@@ -26,6 +26,7 @@
 #include "tpmbuff.h"
 #include "tis.h"
 #include "crb.h"
+#include "dummy.h"
 #include "tpm_common.h"
 #include "tpm1.h"
 #include "tpm2.h"
@@ -74,7 +75,22 @@ struct tpm *enable_tpm(void)
 		if (!crb_init(t))
 			return NULL;
 		break;
+	default:
+		return NULL;
 	}
+
+	return t;
+}
+
+struct tpm* make_dummy_tpm(enum tpm_family family)
+{
+	struct tpm *t = &tpm;
+
+	t->family = family;
+	t->intf = TPM_NONE;
+
+	if (!dummy_tpm_init(t))
+		return NULL;
 
 	return t;
 }
