@@ -260,6 +260,8 @@ static asm_return_t amdsl_launch()
     struct tpm *tpm;
     asm_return_t ret;
 
+    debugfb_init();
+
     print("Enter amdsl_launch()\n");
 
     tpm = enable_tpm();
