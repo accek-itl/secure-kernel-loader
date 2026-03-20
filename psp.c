@@ -388,4 +388,42 @@ bool drtm_get_cap(void)
     return true;
 }
 
+bool drtm_get_tcg_logs(drtm_tcg_log_descriptor_t *log_desc)
+{
+    u32 status = 0;
+
+    print("DRTM: drtm_get_tcg_logs: Entering\n");
+
+    if (!(*g_psp_drtm.c2pmsg_72 & DRTM_MBOX_READY_MASK)) {
+        print("DRTM: drtm_get_tcg_logs: PSP not ready\n");
+        return false;
+    }
+
+    *g_psp_drtm.c2pmsg_72 = (DRTM_CMD_GET_TCG_LOGS << DRTM_MBOX_CMD_SHIFT);
+    if (!drtm_wait_for_psp_ready(&status)) {
+        print("DRTM: drtm_get_tcg_logs: command failed to complete\n");
+        return false;
+    }
+
+    if (status) {
+        print("DRTM: drtm_get_tcg_logs: command failed with status ");
+        drtm_print_status(status);
+        print("\n");
+        return false;
+    }
+
+    print("DRTM: drtm_get_tcg_logs: successfully got TCG logs\n");
+
+    log_desc->addr = *g_psp_drtm.c2pmsg_94 | ((u64)(*g_psp_drtm.c2pmsg_95) << 32);
+    log_desc->size = *g_psp_drtm.c2pmsg_93;
+
+    print("DRTM: drtm_get_tcg_logs: addr = ");
+    print_u64(log_desc->addr);
+    print(", size = ");
+    print_u32(log_desc->size);
+    print("\n");
+
+    return true;
+}
+
 #endif /* AMDSL */

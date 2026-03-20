@@ -37,6 +37,11 @@
 
 #include <stdbool.h>
 
+typedef struct {
+        u64 addr;
+        u32 size;
+} drtm_tcg_log_descriptor_t;
+
 #define	DRTM_MBOX_READY_MASK		0x80000000
 #define	DRTM_MBOX_TMR_INDEX_ID_MASK	0x0F000000
 #define	DRTM_MBOX_CMD_MASK		0x00FF0000
@@ -90,6 +95,8 @@ bool drtm_extend_ossl_digest(u64 addr, u64 size);
 bool drtm_launch(void);
 
 bool drtm_get_cap(void);
+
+bool drtm_get_tcg_logs(drtm_tcg_log_descriptor_t *log_desc);
 
 #endif /* AMDSL */
 
