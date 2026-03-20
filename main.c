@@ -32,6 +32,7 @@
 #include <dev.h>
 #include <psp.h>
 #include <debugfb.h>
+#include <idt.h>
 
 const skl_info_t __used skl_info = {
     .uuid = {
@@ -261,6 +262,7 @@ static asm_return_t amdsl_launch()
     asm_return_t ret;
 
     debugfb_init();
+    setup_idt();
 
     print("Enter amdsl_launch()\n");
 
@@ -339,6 +341,7 @@ asm_return_t skl_main(void)
     u32 entry_offset;
 
     debugfb_init();
+    setup_idt();
 
     /*
      * Now in 64b mode, paging is setup. This is the launching point. We can
