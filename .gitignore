@@ -7,3 +7,7 @@ skl
 cscope.*
 test-*
 !test-*.c
+AmdSl_debug.BIN*
+pubkey_mod.bin
+signature_rev.bin
+signature.bin
