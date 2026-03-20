@@ -4,14 +4,6 @@ LDFLAGS :=
 
 AMDSL ?= n
 
-ifeq ($(DEBUG),y)
-CFLAGS  += -DDEBUG
-endif
-
-ifdef DEBUGMEM_BASE
-CFLAGS  += -DDEBUGMEM_BASE=$(DEBUGMEM_BASE)
-endif
-
 ifeq ($(LTO),y)
 CFLAGS  += -flto
 LDFLAGS += -flto
@@ -32,6 +24,28 @@ CFLAGS  += -m64
 LDFLAGS += -m64
 else
 $(error Bad $$(BITS) value '$(BITS)')
+endif
+
+ifeq ($(DEBUG),y)
+CFLAGS  += -DDEBUG
+endif
+
+ifdef DEBUGMEM_BASE
+CFLAGS  += -DDEBUGMEM_BASE=$(DEBUGMEM_BASE)
+endif
+
+ifdef DEBUGFB_BASE
+ifndef DEBUGFB_W
+$(error DEBUGFB_W is required when DEBUGFB_BASE is set)
+endif
+ifndef DEBUGFB_H
+$(error DEBUGFB_H is required when DEBUGFB_BASE is set)
+endif
+CFLAGS  += -DDEBUGFB_BASE=$(DEBUGFB_BASE)ULL
+CFLAGS  += -DDEBUGFB_W=$(DEBUGFB_W) -DDEBUGFB_H=$(DEBUGFB_H)
+ifdef DEBUGFB_STRIDE
+CFLAGS  += -DDEBUGFB_STRIDE=$(DEBUGFB_STRIDE)
+endif
 endif
 
 # There is a 64k total limit, so optimise for size.  The binary may be loaded
