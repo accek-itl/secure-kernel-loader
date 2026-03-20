@@ -71,7 +71,7 @@ const struct pci_psp_device psp_devs_list[] = {
     {0x1022, 0x15DF, PSP_V3},
     {0x1022, 0x1649, PSP_V2},
     {0x1022, 0x14CA, PSP_V3},
-    {0x1022, 0x15C7, PSP_NONE}
+    {0x1022, 0x15C7, PSP_V3}
 };
 
 static bool init_drtm_interface(u64 base_addr, psp_version_t psp_version);
