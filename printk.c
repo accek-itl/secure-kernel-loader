@@ -16,13 +16,12 @@
 
 #include <boot.h>
 #include <debugfb.h>
+#include <string.h>
 #include <types.h>
 
 #ifdef DEBUG
 
 #ifdef DEBUGMEM_BASE
-
-#include <string.h>
 
 static bool debugmem_initialized;
 static char* debugmem_ptr;
@@ -39,6 +38,7 @@ static void print_char(char c)
     __asm__ __volatile__("clflush (%0)" :: "r"(debugmem_ptr) : "memory");
     debugmem_ptr++;
     *debugmem_ptr = '\0';
+    __asm__ __volatile__("clflush (%0)" :: "r"(debugmem_ptr) : "memory");
 }
 
 #elif defined(DEBUGFB_BASE)
