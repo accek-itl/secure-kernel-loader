@@ -344,7 +344,7 @@ static asm_return_t amdsl_launch()
 
 #endif /* AMDSL */
 
-asm_return_t skl_main(void)
+__asmcall asm_return_t skl_main(void)
 {
 #if !defined(AMDSL)
 
