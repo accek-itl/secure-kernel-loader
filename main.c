@@ -77,7 +77,8 @@ static void extend_pcr(struct tpm *tpm, void *data, u32 size, u32 pcr, char *ev)
  */
 static void __attribute__((noreturn)) reboot(void)
 {
-    print("Rebooting now...");
+    print("Rebooting in 10 seconds...\n");
+    udelay(10000000);
     die();
     unreachable();
 }
