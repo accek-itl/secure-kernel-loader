@@ -39,6 +39,13 @@
 #define _u(x) ((uintptr_t)(x))
 #define _p(x) ((void *)_u(x))
 
+/* Selectors, CS and SS compatible with initial state after SKINIT */
+#define CS_SEL32         0x0008
+#define DS_SEL           0x0010
+#ifdef __x86_64__
+#define CS_SEL64         0x0018
+#endif
+
 #ifdef __ASSEMBLY__
 
 #define GLOBAL(name) \
@@ -102,6 +109,7 @@
 /* Pagetable bits */
 #define _PAGE_PRESENT  0x001
 #define _PAGE_RW       0x002
+#define _PAGE_PCD      0x010
 #define _PAGE_AD       0x060
 #define _PAGE_PSE      0x080
 #define L1_PT_SHIFT    12 /* 4Kb */

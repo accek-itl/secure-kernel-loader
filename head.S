@@ -21,13 +21,6 @@
 
 #include <defs.h>
 
-/* Selectors, CS and SS compatible with initial state after SKINIT */
-#define CS_SEL32         0x0008
-#define DS_SEL           0x0010
-#ifdef __x86_64__
-#define CS_SEL64         0x0018
-#endif
-
 	.section .headers, "ax", @progbits
 
 /**
@@ -370,11 +363,11 @@ l2_identmap: /* 4x L2 pages, each mapping 1G of RAM. */
 .skip 4 * PAGE_SIZE
 ENDDATA(l2_identmap)
 
-l3_identmap: /* 1x L3 page, mapping the 4x L2 pages. */
+GLOBAL(l3_identmap) /* 1x L3 page, mapping the 4x L2 pages. */
 .skip PAGE_SIZE
 ENDDATA(l3_identmap)
 
-l4_identmap: /* 1x L4 page, mapping the L3 page. */
+GLOBAL(l4_identmap) /* 1x L4 page, mapping the L3 page. */
 .skip PAGE_SIZE
 ENDDATA(l4_identmap)
 #endif
